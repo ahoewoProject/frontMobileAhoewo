@@ -1,0 +1,7 @@
+{
+  "name": "frontMobileAhoewo",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
