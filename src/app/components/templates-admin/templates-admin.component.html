@@ -1,0 +1,110 @@
+  <!-- Main Header Nav -->
+
+  <!-- Navigation -->
+  <app-navigation></app-navigation>
+  <!-- End Navigation -->
+
+  <!-- End Main Header Nav -->
+
+  <!-- Menu In Hiddn SideBar -->
+  <div class="rightside-hidden-bar">
+    <div class="hsidebar-header">
+      <div class="sidebar-close-icon"><span class="far fa-times"></span></div>
+      <h4 class="title">Welcome to Realton</h4>
+    </div>
+    <div class="hsidebar-content">
+      <div class="hiddenbar_navbar_content">
+        <div class="hiddenbar_navbar_menu">
+          <ul class="navbar-nav">
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Apartments</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Bungalow</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Houses</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Loft</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Office</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Townhome</a></li>
+            <li class="nav-item"> <a class="nav-link" href="#" role="button">Villa</a></li>
+          </ul>
+        </div>
+        <div class="hiddenbar_footer position-relative bdrt1">
+          <div class="row pt45 pb30 pl30">
+            <div class="col-auto">
+              <div class="contact-info">
+                <p class="info-title dark-color">Total Free Customer Care</p>
+                <h6 class="info-phone dark-color"><a href="%2b(0)-123-050-945-02.html">+(0) 123 050 945 02</a></h6>
+              </div>
+            </div>
+            <div class="col-auto">
+              <div class="contact-info">
+                <p class="info-title dark-color">Nee Live Support?</p>
+                <h6 class="info-mail dark-color"><a href="mailto:hi@homez.com">hi@homez.com</a></h6>
+              </div>
+            </div>
+          </div>
+          <div class="row pt30 pb30 bdrt1">
+            <div class="col-auto">
+              <div class="social-style-sidebar d-flex align-items-center pl30">
+                <h6 class="me-4 mb-0">Follow us</h6>
+                <a class="me-3" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a class="me-3" href="#"><i class="fab fa-twitter"></i></a>
+                <a class="me-3" href="#"><i class="fab fa-instagram"></i></a>
+                <a class="me-3" href="#"><i class="fab fa-linkedin-in"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--End Menu In Hiddn SideBar -->
+  <!-- Mobile Nav  -->
+  <div id="page" class="mobilie_header_nav stylehome1">
+    <div class="mobile-menu">
+      <div class="header innerpage-style">
+        <div class="menu_and_widgets">
+          <div class="mobile_menu_bar d-flex justify-content-between align-items-center">
+            <a class="menubar" href="#menu"><img src="assets/images/mobile-dark-nav-icon.svg" alt=""></a>
+            <a class="mobile_logo" href="#"><img src="assets/images/ahoe-min.png" width="145" height="38" alt=""></a>
+            <a routerLink="/login"><span class="icon fz18 far fa-user-circle"></span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /.mobile-menu -->
+    <nav id="menu" class="">
+      <ul>
+        <li><span>Accueil</span>
+        </li>
+        <li><span>Propriétés</span>
+        </li>
+        <li><span>Agences immobilières</span>
+        </li>
+        <li><span>Services</span>
+        </li>
+        <li class="px-3 mobile-menu-btn">
+          <a href="page-dashboard-add-property.html" class="ud-btn btn-thm text-white">Ajouter une propriété</a>
+        </li>
+        <!-- Only for Mobile View -->
+      </ul>
+    </nav>
+  </div>
+  <!-- End Mobile Nav -->
+
+  <div class="dashboard_content_wrapper">
+    <div class="dashboard dashboard_wrapper pr30 pr0-xl">
+      <div class="dashboard__sidebar d-none d-lg-block">
+        <!-- Menu -->
+        <app-menu></app-menu>
+        <!-- End Menu -->
+      </div>
+      <div class="dashboard__main pl0-md">
+        <!-- Contenu -->
+        <router-outlet></router-outlet>
+        <!-- End Contenu -->
+
+        <!-- Pied de page -->
+        <app-pied-de-page></app-pied-de-page>
+        <!-- End Pied de page -->
+      </div>
+    </div>
+  </div>
+  <a class="scrollToHome" href="#"><i class="fas fa-angle-up"></i></a>
