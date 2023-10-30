@@ -38,6 +38,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TagModule } from 'primeng/tag';
 import { ConfirmPopupModule } from 'primeng/confirmpopup';
 import { TokenInterceptorProvider } from './helpers/token.interceptor';
+import { AgencesImmobilieresComponent } from './components/templates-admin/agences-immobilieres/agences-immobilieres.component';
+import { ServicesComponent } from './components/templates-admin/services/services.component';
 
 @NgModule({
   declarations: [
@@ -62,7 +64,9 @@ import { TokenInterceptorProvider } from './helpers/token.interceptor';
     DemandesCertificationsComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    TemplatesClientComponent
+    TemplatesClientComponent,
+    AgencesImmobilieresComponent,
+    ServicesComponent
   ],
   imports: [
     BrowserModule,

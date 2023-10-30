@@ -5,6 +5,7 @@ export class AgenceImmobiliere extends EntiteDeBase {
 
   id: number;
   nomAgence: string;
+  logoAgence: string;
   adresse: string;
   telephone: string;
   adresseEmail: string;
@@ -18,10 +19,11 @@ export class AgenceImmobiliere extends EntiteDeBase {
     super();
     this.id = 0;
     this.nomAgence = '';
+    this.logoAgence = '';
     this.adresse = '';
     this.telephone = '';
     this.adresseEmail = '';
-    this.estCertifie = true;
+    this.estCertifie = false;
     this.etatAgence = true;
   }
 }

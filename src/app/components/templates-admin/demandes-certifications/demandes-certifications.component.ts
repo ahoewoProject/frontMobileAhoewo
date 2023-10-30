@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AgenceImmobiliere } from 'src/app/models/gestionDesAgencesImmobilieres/AgenceImmobiliere';
 import { DemandeCertification } from 'src/app/models/gestionDesComptes/DemandeCertification';
+import { AgenceImmobiliereService } from 'src/app/services/gestionDesAgencesImmobilieres/agence-immobiliere.service';
 import { DemandeCertificationService } from 'src/app/services/gestionDesComptes/demande-certification.service';
 import { PersonneService } from 'src/app/services/gestionDesComptes/personne.service';
 import { environment } from 'src/environments/environment';
@@ -11,6 +14,7 @@ import { environment } from 'src/environments/environment';
 })
 export class DemandesCertificationsComponent implements OnInit {
 
+  agenceSelectionne!: AgenceImmobiliere;
   affichage = 1;
   visibleAddForm = 0;
   user : any;
@@ -19,16 +23,19 @@ export class DemandesCertificationsComponent implements OnInit {
   pageActuelle = 0; // Page actuelle
 
   erreur: boolean = false;
-  demandeCertification = this.demandeCertifService.demandeCertification;
+  demandeCertification = this.demandeCertificationService.demandeCertification;
   demandeCertifications : DemandeCertification[] = [];
+  agencesImmobilieres : AgenceImmobiliere[] = [];
   messageErreur: string = "";
   messageSuccess: string | null = null;
-  demandeCertifData: FormData = new  FormData();
+  demandeCertificationData: FormData = new  FormData();
   APIEndpoint: string;
   documentJustificatif: any;
+  demandeCertificationForm: any
 
   constructor(
-    private demandeCertifService: DemandeCertificationService,
+    private demandeCertificationService: DemandeCertificationService,
+    private agenceImmobiliereService: AgenceImmobiliereService,
     private personneService: PersonneService,
     private messageService: MessageService,
     private confirmationService: ConfirmationService
@@ -37,26 +44,46 @@ export class DemandesCertificationsComponent implements OnInit {
     this.APIEndpoint = environment.APIEndpoint;
     const utilisateurConnecte = this.personneService.utilisateurConnecte();
     this.user = JSON.parse(utilisateurConnecte);
+    this.agenceImmobiliereService.getAllByAgentImmobilier().subscribe(
+      (response) => {
+        this.agencesImmobilieres = response;
+      }
+    )
   }
 
   ngOnInit(): void {
     if(this.user.role.code == 'ROLE_NOTAIRE'){
       this.listeDemandeCertifications();
     }else{
-      this.listeDemandeCertifParUtilisateur();
+      this.listeDemandeCertificationParUtilisateur();
     }
+    this.initDemandeCertificationForm();
+  }
+
+  initDemandeCertificationForm(): void {
+    this.demandeCertificationForm = new FormGroup({
+      agenceImmobiliere: new FormControl('', [Validators.required])
+    })
+  }
+
+  get agenceImmobiliere(){
+    return this.demandeCertificationForm.get('agenceImmobiliere');
+  }
+
+  agenceSelectionnee(event: any) {
+    this.agenceSelectionne = event.value;
   }
 
   listeDemandeCertifications(){
-    this.demandeCertifService.getAll().subscribe(
+    this.demandeCertificationService.getAll().subscribe(
       (response) => {
         this.demandeCertifications = response;
       }
     );
   }
 
-  listeDemandeCertifParUtilisateur(){
-    this.demandeCertifService.getAll().subscribe(
+  listeDemandeCertificationParUtilisateur(){
+    this.demandeCertificationService.findByUser().subscribe(
       (response) => {
         this.demandeCertifications = response;
       }
@@ -80,7 +107,7 @@ export class DemandesCertificationsComponent implements OnInit {
     if(this.user.role.code == 'ROLE_NOTAIRE'){
       this.listeDemandeCertifications();
     }else{
-      this.listeDemandeCertifParUtilisateur();
+      this.listeDemandeCertificationParUtilisateur();
     }
     this.affichage = 1;
     this.visibleAddForm = 0;
@@ -92,31 +119,25 @@ export class DemandesCertificationsComponent implements OnInit {
     this.demandeCertification = new DemandeCertification();
   }
 
-  onUpload(event: any) {
+  telecharger(event: any) {
     const uploadedFile: File = event.files[0];
     console.log(uploadedFile)
     this.documentJustificatif = uploadedFile;
-    this.ajoutDemandeCertif()
+    this.messageSuccess = "Le document justificatif a été téléchargé avec succès.";
+    this.messageService.add({ severity: 'info', summary: 'Téléchargement réussi', detail: this.messageSuccess })
   }
 
-  onSelectFile(event: any){
-    if(event.target.files.length > 0){
-      const file = event.target.files[0];
-      this.documentJustificatif = file;
-      console.log(file)
-    }
-  }
 
-  ajoutDemandeCertif(): void{
+  ajouterDemandeCertificationCompte(): void{
 
     const formValues = {
       personne: this.user
     }
 
-    this.demandeCertifData.append('demandeCertificationJson', JSON.stringify(formValues))
-    this.demandeCertifData.append('documentJustificatif', this.documentJustificatif);
+    this.demandeCertificationData.append('demandeCertificationJson', JSON.stringify(formValues))
+    this.demandeCertificationData.append('documentJustificatif', this.documentJustificatif);
 
-    this.demandeCertifService.addDemandeCertif(this.demandeCertifData)
+    this.demandeCertificationService.addDemandeCertificationCompte(this.demandeCertificationData)
     .subscribe(
       (response) => {
 
@@ -138,8 +159,40 @@ export class DemandesCertificationsComponent implements OnInit {
     );
   }
 
-  detailDemandeCertif(id: number): void {
-    this.demandeCertifService.findById(id).subscribe(
+  ajouterDemandeCertificationAgence(): void{
+
+    const formValues = {
+      personne: this.user,
+      agenceImmobiliere: this.agenceSelectionne
+    }
+
+    this.demandeCertificationData.append('demandeCertificationJson', JSON.stringify(formValues))
+    this.demandeCertificationData.append('documentJustificatif', this.documentJustificatif);
+
+    this.demandeCertificationService.addDemandeCertificationAgence(this.demandeCertificationData)
+    .subscribe(
+      (response) => {
+
+        if(response.id > 0) {
+          this.voirListe();
+          this.messageSuccess = "La demande de certification a été ajouté avec succès!";
+          this.messageService.add({ severity: 'success', summary: 'Demande de certification réussie', detail: this.messageSuccess })
+        }
+        else {
+          this.erreur = true;
+          this.messageErreur = "Erreur lors de l'ajout de votre demande de certification!"
+          this.messageService.add({ severity: 'error', summary: "Erreur d'ajout de la demande de certification", detail: this.messageErreur });
+          this.afficherFormulaireAjouter();
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+  }
+
+  detailDemandeCertification(id: number): void {
+    this.demandeCertificationService.findById(id).subscribe(
       (response) => {
         this.demandeCertification = response;
       }
@@ -147,7 +200,7 @@ export class DemandesCertificationsComponent implements OnInit {
   }
 
   afficherPageDetail(id: number): void {
-    this.detailDemandeCertif(id);
+    this.detailDemandeCertification(id);
     this.affichage = 2;
     this.visibleAddForm = 0;
   }
@@ -159,10 +212,9 @@ export class DemandesCertificationsComponent implements OnInit {
       header: "Certification de compte",
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.demandeCertifService.certifierCompte(idPersonne, idDemandeCertif).subscribe(
+        this.demandeCertificationService.certifierCompte(idPersonne, idDemandeCertif).subscribe(
           (response) => {
             console.log(response);
-            this.ngOnInit()
             this.voirListe();
             this.messageSuccess = "Le compte du demandeur a été certifié avec succès!";
             this.messageService.add({ severity: 'success', summary: 'Certification de compte confirmé', detail: this.messageSuccess })
@@ -171,6 +223,32 @@ export class DemandesCertificationsComponent implements OnInit {
       },
       reject: () => {
           this.messageService.add({ severity: 'error', summary: 'Certification de compte rejetée', detail: 'Vous avez rejeté la certification de ce compte !' });
+      }
+    });
+  }
+
+  certifierAgence(event: any, idAgence: number, idDemandeCertif: number): void{
+    this.confirmationService.confirm({
+      target: event.target as EventTarget,
+      message: 'Vous êtes sûr de vouloir certifier cette agence ?',
+      header: "Certification d'une agence immobilière",
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: "Oui",
+      rejectLabel: "Non",
+      acceptIcon: 'pi pi-check',
+      rejectIcon: 'pi pi-times',
+      accept: () => {
+        this.demandeCertificationService.certifierAgence(idAgence, idDemandeCertif).subscribe(
+          (response) => {
+            console.log(response);
+            this.voirListe();
+            this.messageSuccess = "L'agence immobilière a été certifiée avec succès!";
+            this.messageService.add({ severity: 'success', summary: 'Certification de l\'agence confirmée', detail: this.messageSuccess })
+          }
+        );
+      },
+      reject: () => {
+          this.messageService.add({ severity: 'error', summary: 'Certification de l\'agence rejetée', detail: 'Vous avez rejeté la certification de cette agence !' });
       }
     });
   }
